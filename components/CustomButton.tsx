@@ -2,11 +2,15 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function CustomButton() {
+type CustomButtonType = {
+  onPress: () => void;
+};
+export default function CustomButton({ onPress }: CustomButtonType) {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       style={{ width: "90%", marginVertical: 10 }}
+      onPress={onPress}
     >
       <LinearGradient
         colors={["#007537", "#4CAF50"]}

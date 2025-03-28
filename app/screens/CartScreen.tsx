@@ -35,8 +35,6 @@ const CartScreen = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
 
-  const toggleModal = () => {};
-
   const removeItem = (id: number) => {
     setCart(cart.filter((item) => item.id !== id));
   };
@@ -58,15 +56,18 @@ const CartScreen = () => {
   };
 
   const handleThanhToan = () => {
+    if (chooseCart.length === 0) return;
     console.log("Thanh toán các sản phẩm:", chooseCart);
   };
-  const handleDongY = () => {};
+  const handleDongY = () => {
+    setCart(cart.filter((item) => !chooseCart.includes(item.id)));
+    setChooseCart([]);
+    setModalVisible(false);
+  };
   const handleHuyBo = () => setModalVisible(!isModalVisible);
   const handleDeleteAll = useCallback(() => {
     setModalVisible(!isModalVisible);
-    setCart(cart.filter((item) => !chooseCart.includes(item.id)));
-    setChooseCart([]);
-  }, [cart]);
+  }, []);
   console.log(chooseCart);
 
   return (
@@ -101,7 +102,10 @@ const CartScreen = () => {
               .toLocaleString()}
           </Text>
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleThanhToan}>
+        <TouchableOpacity
+          style={chooseCart.length === 0 ? styles.buttonDefault : styles.button}
+          onPress={handleThanhToan}
+        >
           <Text style={styles.buttonText}>Tiến hành thanh toán</Text>
           <MaterialIcons name="chevron-right" size={20} color="white" />
         </TouchableOpacity>
@@ -122,7 +126,7 @@ const CartScreen = () => {
             </Text>
 
             <TouchableOpacity
-              onPress={toggleModal}
+              onPress={handleDongY}
               style={styles.confirmButton}
             >
               <Text
@@ -180,6 +184,15 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#007537",
+    paddingVertical: 12,
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 30,
+  },
+  buttonDefault: {
+    backgroundColor: "#ABABAB",
     paddingVertical: 12,
     borderRadius: 8,
     flexDirection: "row",

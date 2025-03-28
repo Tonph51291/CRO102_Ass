@@ -11,11 +11,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import ItemProduct from "@/components/ItemProduct";
 import PlantSection from "@/components/PlantSection";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/store/store";
+import { fetchProducts } from "@/store/productReduces";
 
 const { width, height } = Dimensions.get("window");
 
@@ -26,10 +29,22 @@ const handleHangMoi = () => {
   alert("Hàng mới");
 };
 
-export default function HomeScreen() {
-  const arr = [1, 2, 3, 4, 5, 6, 7];
+export default function HomeScreen({ navigation }: any) {
+  const dispatch = useDispatch<AppDispatch>();
+  const { products } = useSelector((state: RootState) => state.products);
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  const handleXemThem = () => {
+    navigation.navigate("RegularScreen", { products });
+  };
+  const handleDetails = () => {
+    navigation.navigate("ProductDetail");
+  };
+
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
       <ImageBackground
         style={styles.imageBanner}
         source={require("../../assets/images/banner.png")}
@@ -55,8 +70,11 @@ export default function HomeScreen() {
           <Image source={require("../../assets/images/shopping-cart.png")} />
         </TouchableOpacity>
       </ImageBackground>
-
-      <PlantSection arr={arr} />
+      <PlantSection
+        products={products}
+        onPressXemThem={handleXemThem}
+        onPressDetails={handleDetails}
+      />
     </ScrollView>
   );
 }

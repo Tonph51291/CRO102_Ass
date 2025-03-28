@@ -1,24 +1,30 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import Colors from "@/constants/Colors";
+import { Product } from "@/store/productReduces";
 const { width, height } = Dimensions.get("window");
-export default function ItemProduct(item: any) {
+export default function ItemProduct({ item, onPressDetails }: any) {
   return (
-    <View style={styles.containerItem}>
-      <Image
-        source={require("../assets/images/image5.png")}
-        style={styles.styleImg}
-      />
-      <Text style={styles.textItemName}>Spider Plant </Text>
-      <Text style={styles.textItemTapTinh}>Ưa bóng </Text>
-      <Text style={styles.textItemGia}>250.000 đ</Text>
-    </View>
+    <TouchableOpacity style={styles.containerItem} onPress={onPressDetails}>
+      <Image source={{ uri: item.image[0] }} style={styles.styleImg} />
+      <Text style={styles.textItemName}>{item.name} </Text>
+      <Text style={styles.textItemTapTinh}>{item.category} </Text>
+      <Text style={styles.textItemGia}>{item.price}</Text>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   styleImg: {
     width: width * 0.41,
+    height: width * 0.41,
     backgroundColor: "#F6F6F6",
     borderRadius: 10,
   },

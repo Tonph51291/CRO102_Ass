@@ -17,12 +17,12 @@ const notifications = [
 
 export default function NotificationScreen() {
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <UIHeader title={"Thông báo"} />
       <FlatList
         keyExtractor={(item) => item.id.toString()}
         data={notifications}
-        renderItem={({ item }) => <ItemNotification item={item } />}
+        renderItem={({ item }) => <ItemNotification item={item} />}
       />
     </SafeAreaView>
   );

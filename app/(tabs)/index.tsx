@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { useFonts } from "expo-font";
 import Login from "../screens/Login";
@@ -9,6 +9,12 @@ import ProductDetailScreen from "../screens/ProductDetailsScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import RegularScreen from "../screens/RegularScreen";
 import CartScreen from "../screens/CartScreen";
+import PayMentScreen from "../screens/PayMentScreen";
+import UITab from "@/navigation/UITab";
+
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
+import App from "@/navigation/App";
 
 export default function index() {
   const [fontsLoaded] = useFonts({
@@ -20,7 +26,11 @@ export default function index() {
     return <Text>Loading fonts...</Text>;
   }
 
-  return <CartScreen />;
+  return (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  );
 }
 
 const styles = StyleSheet.create({});

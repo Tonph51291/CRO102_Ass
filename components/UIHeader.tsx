@@ -5,15 +5,21 @@ interface SearchType {
   nameIconRight?: number | undefined;
   title?: string;
   onPressRight?: () => void;
+  onPressLeft?: () => void;
 }
 
-const UIHeader = ({ nameIconRight, title, onPressRight }: SearchType) => {
+const UIHeader = ({
+  nameIconRight,
+  title,
+  onPressRight,
+  onPressLeft,
+}: SearchType) => {
   console.log("da load lai ui header");
   return (
     <View style={styles.container}>
-      <View style={styles.containerLeft}>
+      <TouchableOpacity style={styles.containerLeft} onPress={onPressLeft}>
         <MaterialIcons name="chevron-left" size={30} />
-      </View>
+      </TouchableOpacity>
       <View style={styles.containerCenter}>
         <Text style={styles.textTitle}>{title}</Text>
       </View>
@@ -35,6 +41,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 50,
     marginBottom: 10,
+    backgroundColor: "white",
   },
   containerLeft: {
     flex: 1,

@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 
 interface CartItemProps {
@@ -24,6 +24,7 @@ const CartItem: React.FC<CartItemProps> = ({
   chooseCart,
   isChecked,
 }) => {
+  console.log("render");
   return (
     <View style={styles.cartItem}>
       <TouchableOpacity onPress={() => chooseCart(item.id)}>
@@ -56,7 +57,7 @@ const CartItem: React.FC<CartItemProps> = ({
   );
 };
 
-export default CartItem;
+export default memo(CartItem);
 
 const styles = StyleSheet.create({
   cartItem: {

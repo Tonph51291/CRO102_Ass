@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   StatusBar,
   StyleSheet,
@@ -13,6 +14,8 @@ import Colors from "@/constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import ItemInput from "@/components/ItemInput";
 import CustomButton from "@/components/CustomButton";
+import { FIREBASE_AUTH } from "@/firebaseconfig";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 export default function DangKy() {
   const [hoTen, setHoTen] = useState("");
@@ -22,6 +25,29 @@ export default function DangKy() {
   const [password, setPassword] = useState("");
   const handleDangNhap = () => {
     alert("Chuyen sang dang nhap");
+  };
+  const handleDangKy = async () => {
+    if (!hoTen || !email || !soDT || !password) {
+      return;
+    }
+
+    try {
+      // Đăng ký tài khoản với Email & Password
+      const userCredential = await createUserWithEmailAndPassword(
+        FIREBASE_AUTH,
+        email,
+        password
+      );
+
+      // Cập nhật thông tin người dùng (họ tên)
+      await updateProfile(userCredential.user, {
+        displayName: hoTen,
+      });
+
+      Alert.alert("Thành công", "Tài khoản đã được đăng ký!");
+    } catch (error: any) {
+      console.log("Lỗi đăng ký", error.message);
+    }
   };
   return (
     <View style={{ alignItems: "center" }}>
@@ -65,7 +91,7 @@ export default function DangKy() {
         </Text>
       </View>
 
-      <CustomButton />
+      <CustomButton onPress={handleDangKy} />
       <View style={styles.dividerContainer}>
         <View style={styles.line} />
         <Text style={styles.orText}>Hoặc</Text>

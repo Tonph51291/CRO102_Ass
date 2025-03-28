@@ -13,12 +13,26 @@ import Colors from "@/constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import ItemInput from "@/components/ItemInput";
 import CustomButton from "@/components/CustomButton";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH } from "@/firebaseconfig";
 
-export default function Login() {
+export default function Login({ navigation }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  console.log(email);
-  console.log(password);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert("Vui lòng nhập email và mật khẩu!");
+      return;
+    }
+    try {
+      await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      navigation.navigate("UITab");
+    } catch (error: any) {
+      alert("Lỗi đăng nhập: " + error.message);
+    }
+  };
+
   return (
     <View style={{ alignItems: "center" }}>
       <StatusBar hidden={true} />
@@ -73,7 +87,7 @@ export default function Login() {
         </Text>
       </View>
 
-      <CustomButton />
+      <CustomButton onPress={handleLogin} />
       <View style={styles.dividerContainer}>
         <View style={styles.line} />
         <Text style={styles.orText}>Hoặc</Text>
@@ -91,7 +105,7 @@ export default function Login() {
       {/* Đăng ký tài khoản */}
       <View style={styles.registerContainer}>
         <Text style={styles.text}>Bạn không có tài khoản</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("DangKy")}>
           <Text style={styles.registerText}> Tạo tài khoản</Text>
         </TouchableOpacity>
       </View>

@@ -11,7 +11,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import UIHeader from "@/components/UIHeader";
 
-const ProductDetailScreen = () => {
+const ProductDetailScreen = ({ navigation }: any) => {
   const [quantity, setQuantity] = useState(0);
 
   return (
@@ -19,6 +19,7 @@ const ProductDetailScreen = () => {
       <UIHeader
         nameIconRight={require("../../assets/images/shopping-cart.png")}
         title="Screen"
+        onPressLeft={() => navigation.goBack()}
       />
 
       {/* Ảnh sản phẩm */}

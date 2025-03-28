@@ -12,14 +12,19 @@ import {
 
 const category = ["Tất cả", "Hàng Mới Về", "Ưa sáng", "Ưa bóng"];
 
-export default function RegularScreen() {
+export default function RegularScreen({ navigation, route }: any) {
   const [selectedCategory, setSelectedCategory] = useState<string>("Tất cả");
   const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  const { products } = route.params; // Nhận products từ params
+  const handleBackHome = () => {
+    navigation.goBack();
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <UIHeader
         nameIconRight={require("../../assets/images/shopping-cart.png")}
         title="Cây trồng"
+        onPressLeft={handleBackHome}
       />
       <FlatList
         data={category}
@@ -50,7 +55,7 @@ export default function RegularScreen() {
         }}
       />
       <FlatList
-        data={arr}
+        data={products}
         columnWrapperStyle={styles.row}
         keyExtractor={(item, index) => index.toString()} // Sử dụng index làm key
         numColumns={2} // Hiển thị 2 cột

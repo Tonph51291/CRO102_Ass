@@ -29,7 +29,7 @@ const SearchScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       <UIHeader
         nameIconRight={require("../../assets/images/shopping-cart.png")}
         title="Search"
