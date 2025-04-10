@@ -33,14 +33,14 @@ const styles = StyleSheet.create({
     width: "100%",
     borderBottomWidth: 1,
     borderBottomColor: "#ABABAB",
-    fontSize: 20,
+    fontSize: 15,
   },
   styleError: {
     fontFamily: "Lato-Regular",
     color: "#FF0000",
     fontWeight: "500",
-    fontSize: 20,
-    marginTop: 10,
+    fontSize: 14,
+    marginTop: 5,
     width: "100%",
   },
 });

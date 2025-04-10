@@ -19,28 +19,33 @@ import PlantSection from "@/components/PlantSection";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { fetchProducts } from "@/store/productReduces";
+import { getCartById } from "@/store/cartSlice";
 
 const { width, height } = Dimensions.get("window");
 
-const handleCart = () => {
-  alert("cart ");
-};
 const handleHangMoi = () => {
   alert("Hàng mới");
 };
 
 export default function HomeScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
+  const uid = useSelector((state: RootState) => state.user.uid);
   const { products } = useSelector((state: RootState) => state.products);
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+  useEffect(() => {
+    dispatch(getCartById(uid));
+  }, [uid]);
+  const handleCart = () => {
+    navigation.navigate("CartScreen");
+  };
 
   const handleXemThem = () => {
     navigation.navigate("RegularScreen", { products });
   };
-  const handleDetails = () => {
-    navigation.navigate("ProductDetail");
+  const handleDetails = (item: any) => {
+    navigation.navigate("ProductDetail", { item });
   };
 
   return (

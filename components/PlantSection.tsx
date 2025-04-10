@@ -18,13 +18,13 @@ export default function PlantSection({
 }: {
   products: any;
   onPressXemThem: () => void;
-  onPressDetails: () => void;
+  onPressDetails: (product: any) => void;
 }) {
   const type = [...new Set(products.map((item: any) => item.type))];
 
   return (
     <View>
-      {type.map((type, index) => {
+      {type.map((type: any) => {
         const filteredProducts = products.filter(
           (item: any) => item.type === type
         );

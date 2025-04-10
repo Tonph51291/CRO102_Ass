@@ -12,7 +12,10 @@ import { Product } from "@/store/productReduces";
 const { width, height } = Dimensions.get("window");
 export default function ItemProduct({ item, onPressDetails }: any) {
   return (
-    <TouchableOpacity style={styles.containerItem} onPress={onPressDetails}>
+    <TouchableOpacity
+      style={styles.containerItem}
+      onPress={() => onPressDetails(item)}
+    >
       <Image source={{ uri: item.image[0] }} style={styles.styleImg} />
       <Text style={styles.textItemName}>{item.name} </Text>
       <Text style={styles.textItemTapTinh}>{item.category} </Text>

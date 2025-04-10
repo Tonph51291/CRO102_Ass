@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   FlatList,
@@ -11,96 +11,108 @@ import CartItem from "@/components/CartItem";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Modal } from "react-native";
 import { Button } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { addProductToPayment } from "@/store/paymentSlice";
 
-const CartScreen = () => {
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      name: "Spider Plant",
-      category: "Ưa bóng",
-      price: 250000,
-      quantity: 2,
-      image: require("../../assets/images/image5.png"),
-    },
-    {
-      id: 2,
-      name: "Spider Plant",
-      category: "Ưa bóng",
-      price: 250000,
-      quantity: 2,
-      image: require("../../assets/images/image5.png"),
-    },
-  ]);
-  const [chooseCart, setChooseCart] = useState<number[]>([]);
+const CartScreen = ({ navigation }: any) => {
+  const cart = useSelector((state: RootState) => state.cart.carts);
+  const dispatch = useDispatch<AppDispatch>();
+  const [chooseCart, setChooseCart] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [totalPrice, setTotalPrice] = useState<number>();
 
-  const removeItem = (id: number) => {
-    setCart(cart.filter((item) => item.id !== id));
+  const firstCart = cart[0];
+  useEffect(() => {
+    const total = firstCart?.cart?.reduce((total, item) => {
+      if (chooseCart.includes(item.product.id)) {
+        return total + item.product.price * item.quantity; // Tính giá của sản phẩm đã chọn
+      }
+      return total;
+    }, 0);
+
+    setTotalPrice(total || 0); // Cập nhật totalPrice
+  }, [chooseCart, firstCart?.cart]);
+  console.log("cart1", firstCart.cart);
+  firstCart.cart.map((item, index) => {
+    console.log("item", item.product.name);
+  });
+
+  const removeItem = (id: string) => {
+    //setCart(cart.filter((item) => item.id !== id));
   };
 
-  const updateQuantity = (id: number, amount: number) => {
-    setCart(
-      cart.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + amount) }
-          : item
-      )
-    );
-  };
+  const updateQuantity = (id: string, amount: number) => {};
 
-  const chooseProduct = (id: number) => {
+  const chooseProduct = (id: string) => {
     setChooseCart((prev) =>
       prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
     );
   };
+  const handleGoBackHome = () => {
+    navigation.goBack();
+  };
 
   const handleThanhToan = () => {
+    const selectedItems = firstCart.cart.filter((item) =>
+      chooseCart.includes(item.product.id)
+    );
+    console.log(selectedItems);
+
     if (chooseCart.length === 0) return;
-    console.log("Thanh toán các sản phẩm:", chooseCart);
+    setModalVisible(true);
   };
+  // thieu quantity them  cai khac oke roi
   const handleDongY = () => {
-    setCart(cart.filter((item) => !chooseCart.includes(item.id)));
-    setChooseCart([]);
-    setModalVisible(false);
+    const selectedItems = firstCart.cart.filter((item) =>
+      chooseCart.includes(item.product.id)
+    );
+    const productsToAdd = selectedItems.map((item) => item);
+    dispatch(addProductToPayment(productsToAdd));
+    navigation.navigate("PayMentScreen");
   };
   const handleHuyBo = () => setModalVisible(!isModalVisible);
   const handleDeleteAll = useCallback(() => {
     setModalVisible(!isModalVisible);
   }, []);
-  console.log(chooseCart);
 
   return (
     <View style={styles.container}>
       <UIHeader
+        onPressLeft={handleGoBackHome}
         onPressRight={handleDeleteAll}
         title="GIỎ HÀNG"
         nameIconRight={require("../../assets/images/delete.png")}
       />
-      <View style={{ flex: 8.5 }}>
-        <FlatList
-          data={cart}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <CartItem
-              item={item}
-              updateQuantity={updateQuantity}
-              removeItem={removeItem}
-              chooseCart={chooseProduct}
-              isChecked={chooseCart.includes(item.id)}
-            />
-          )}
-        />
+      <View style={{ flex: 8.5, backgroundColor: "white", padding: "5%" }}>
+        {firstCart?.cart?.length > 0 ? (
+          <FlatList
+            data={firstCart.cart}
+            keyExtractor={(item, index) => index + ""}
+            renderItem={({ item }) => (
+              <CartItem
+                item={item?.product}
+                updateQuantity={updateQuantity}
+                removeItem={removeItem}
+                chooseCart={chooseProduct}
+                isChecked={chooseCart.includes(item.product.id)}
+                quantity={item.quantity}
+              />
+            )}
+          />
+        ) : (
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <Text style={{ fontFamily: "Lato-Regular", fontSize: 16 }}>
+              Giỏ hàng trống
+            </Text>
+          </View>
+        )}
       </View>
-      <View style={{ flex: 1.5 }}>
+      <View style={{ flex: 1.5, padding: "5%", backgroundColor: "white" }}>
         <View style={styles.summaryContainer}>
           <Text style={styles.summaryText}>Tạm tính</Text>
-          <Text style={styles.priceText}>
-            {cart
-              .filter((item) => chooseCart.includes(item.id))
-              .reduce((total, item) => total + item.price * item.quantity, 0)
-              .toLocaleString()}
-          </Text>
+          <Text style={styles.priceText}>{totalPrice}</Text>
         </View>
         <TouchableOpacity
           style={chooseCart.length === 0 ? styles.buttonDefault : styles.button}
@@ -164,8 +176,7 @@ export default CartScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 15,
+    backgroundColor: "#white",
   },
   summaryContainer: {
     flexDirection: "row",

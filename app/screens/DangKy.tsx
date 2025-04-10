@@ -16,6 +16,9 @@ import ItemInput from "@/components/ItemInput";
 import CustomButton from "@/components/CustomButton";
 import { FIREBASE_AUTH } from "@/firebaseconfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { registerUser } from "@/store/useSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
 
 export default function DangKy() {
   const [hoTen, setHoTen] = useState("");
@@ -26,13 +29,15 @@ export default function DangKy() {
   const handleDangNhap = () => {
     alert("Chuyen sang dang nhap");
   };
+  const dispatch = useDispatch<AppDispatch>(); // Sử dụng dispatch từ Redux
+
   const handleDangKy = async () => {
     if (!hoTen || !email || !soDT || !password) {
       return;
     }
 
     try {
-      // Đăng ký tài khoản với Email & Password
+      // Đăng ký tài khoản với Firebase
       const userCredential = await createUserWithEmailAndPassword(
         FIREBASE_AUTH,
         email,
@@ -44,9 +49,23 @@ export default function DangKy() {
         displayName: hoTen,
       });
 
+      // Gửi thông tin người dùng lên Redux và API
+      const userData = {
+        uid: userCredential.user.uid,
+        name: hoTen,
+        email: email,
+        soDienThoai: soDT,
+        diaChi: "",
+      };
+      console.log(userData);
+
+      // Dispatch action registerUser để gửi lên API và Redux
+      dispatch(registerUser(userData));
+
       Alert.alert("Thành công", "Tài khoản đã được đăng ký!");
     } catch (error: any) {
       console.log("Lỗi đăng ký", error.message);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi trong quá trình đăng ký!");
     }
   };
   return (

@@ -4,17 +4,17 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 
 interface CartItemProps {
   item: {
-    id: number;
+    id: string;
     name: string;
     category: string;
     price: number;
-    quantity: number;
-    image: any;
+    image: string;
   };
-  updateQuantity: (id: number, amount: number) => void;
-  removeItem: (id: number) => void;
-  chooseCart: (id: number) => void;
+  updateQuantity: (id: string, amount: number) => void;
+  removeItem: (id: string) => void;
+  chooseCart: (id: string) => void;
   isChecked: boolean;
+  quantity: number;
 }
 
 const CartItem: React.FC<CartItemProps> = ({
@@ -23,8 +23,8 @@ const CartItem: React.FC<CartItemProps> = ({
   removeItem,
   chooseCart,
   isChecked,
+  quantity,
 }) => {
-  console.log("render");
   return (
     <View style={styles.cartItem}>
       <TouchableOpacity onPress={() => chooseCart(item.id)}>
@@ -34,7 +34,7 @@ const CartItem: React.FC<CartItemProps> = ({
           color={isChecked ? "#009245" : "black"}
         />
       </TouchableOpacity>
-      <Image source={item.image} style={styles.image} />
+      <Image source={{ uri: item.image }} style={styles.image} />
       <View style={styles.info}>
         <Text style={styles.name}>
           {item.name} | <Text style={styles.category}>{item.category}</Text>
@@ -44,7 +44,7 @@ const CartItem: React.FC<CartItemProps> = ({
           <TouchableOpacity onPress={() => updateQuantity(item.id, -1)}>
             <Text style={styles.button}>-</Text>
           </TouchableOpacity>
-          <Text style={styles.quantity}>{item.quantity}</Text>
+          <Text style={styles.quantity}>{quantity}</Text>
           <TouchableOpacity onPress={() => updateQuantity(item.id, 1)}>
             <Text style={styles.button}>+</Text>
           </TouchableOpacity>
@@ -68,8 +68,8 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E0E0E0",
   },
   image: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
     borderRadius: 8,
     marginRight: 10,
   },

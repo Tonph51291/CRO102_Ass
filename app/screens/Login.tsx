@@ -15,10 +15,14 @@ import ItemInput from "@/components/ItemInput";
 import CustomButton from "@/components/CustomButton";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "@/firebaseconfig";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser, setUser } from "@/store/useSlice";
+import { RootState } from "@/store/store";
 
 export default function Login({ navigation }: any) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("tonbuiduy@gmail.com");
+  const [password, setPassword] = useState("123456");
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -26,7 +30,26 @@ export default function Login({ navigation }: any) {
       return;
     }
     try {
-      await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        FIREBASE_AUTH,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+
+      const users = await getUser(user.uid);
+
+      const userData = {
+        uid: user.uid,
+        name: user.displayName || "", // Firebase có thể không có tên nếu chưa cập nhật
+        email: user.email || "",
+        soDienThoai: users.soDienThoai || "", // Firebase không lưu số điện thoại, bạn có thể lấy từ nơi khác
+        diaChi: users.diaChi || "",
+      };
+
+      dispatch(setUser(userData));
+
       navigation.navigate("UITab");
     } catch (error: any) {
       alert("Lỗi đăng nhập: " + error.message);

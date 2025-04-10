@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/repondata/baseURL";
+import { BASE_URL } from "@/repository/baseURL";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 export type Product = {

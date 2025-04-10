@@ -14,11 +14,15 @@ const category = ["Tất cả", "Hàng Mới Về", "Ưa sáng", "Ưa bóng"];
 
 export default function RegularScreen({ navigation, route }: any) {
   const [selectedCategory, setSelectedCategory] = useState<string>("Tất cả");
-  const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
   const { products } = route.params; // Nhận products từ params
   const handleBackHome = () => {
     navigation.goBack();
   };
+  const handleDetails = (item: any) => {
+    navigation.navigate("ProductDetail", { item });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <UIHeader
@@ -60,7 +64,11 @@ export default function RegularScreen({ navigation, route }: any) {
         keyExtractor={(item, index) => index.toString()} // Sử dụng index làm key
         numColumns={2} // Hiển thị 2 cột
         renderItem={({ item }) => (
-          <ItemProduct item={item} nestedScrollEnabled={true} />
+          <ItemProduct
+            onPressDetails={handleDetails}
+            item={item}
+            nestedScrollEnabled={true}
+          />
         )}
       />
     </SafeAreaView>

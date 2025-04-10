@@ -15,6 +15,10 @@ import UITab from "@/navigation/UITab";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
 import App from "@/navigation/App";
+import PaymentMethodScreen from "../screens/PaymentMethodScreen";
+import NotificationPayMent from "../screens/NotificationPayMent";
+import Profile from "../screens/Profile";
+import SettingProfile from "../screens/SettingProfile";
 
 export default function index() {
   const [fontsLoaded] = useFonts({

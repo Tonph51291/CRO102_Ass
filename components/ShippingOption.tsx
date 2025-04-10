@@ -4,20 +4,35 @@ import { Ionicons } from "@expo/vector-icons";
 
 interface ShippingOptionProps {
   name: string;
-  price: string;
+  price: number;
   estimatedDate: string;
   isSelected: boolean;
   onSelect: () => void;
 }
 
-const ShippingOption = () => {
+const ShippingOption = ({
+  name,
+  price,
+  estimatedDate,
+  isSelected,
+  onSelect,
+}: ShippingOptionProps) => {
+  console.log(isSelected);
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onSelect}>
       <View style={styles.textContainer}>
-        <Text style={styles.name}>00000</Text>
-        <Text style={styles.estimatedDate}>Dự kiến giao hàng</Text>
+        <Text style={styles.name}>
+          {name} - {price}
+        </Text>
+        <Text style={styles.estimatedDate}>
+          Dự kiến giao hàng {estimatedDate}
+        </Text>
       </View>
-      <Ionicons name="checkmark" size={24} color="green" />
+      {isSelected == true ? (
+        <Ionicons name="checkmark" size={24} color="green" />
+      ) : (
+        <></>
+      )}
     </TouchableOpacity>
   );
 };
