@@ -41,6 +41,7 @@ export default function Login({ navigation }: any) {
       const users = await getUser(user.uid);
 
       const userData = {
+        id: users.id,
         uid: user.uid,
         name: user.displayName || "", // Firebase có thể không có tên nếu chưa cập nhật
         email: user.email || "",
@@ -53,6 +54,7 @@ export default function Login({ navigation }: any) {
       navigation.navigate("UITab");
     } catch (error: any) {
       alert("Lỗi đăng nhập: " + error.message);
+      console.log("Đăng nhập lỗi: ", error.code, error.message);
     }
   };
 

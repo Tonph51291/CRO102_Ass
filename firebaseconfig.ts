@@ -3,15 +3,14 @@ import { initializeAuth, getReactNativePersistence } from "firebase/auth"; // Im
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 const firebaseConfig = {
-  apiKey: "AIzaSyAkAYErUzcisGpGZqgvT55UUoR_V66rvXQ",
-  authDomain: "ass-cro102.firebaseapp.com",
-  projectId: "ass-cro102",
-  storageBucket: "ass-cro102.firebasestorage.app",
-  messagingSenderId: "696338982277",
-  appId: "1:696338982277:web:b4bcaf9b4b6311356d90ec",
-  measurementId: "G-ZVSV3NJ6BK",
+  apiKey: "AIzaSyCQI7sVGYDclRwxeWIbe00PmFPaE59JbgM",
+  authDomain: "lab7-cro103.firebaseapp.com",
+  projectId: "lab7-cro103",
+  storageBucket: "lab7-cro103.firebasestorage.app",
+  messagingSenderId: "655220556429",
+  appId: "1:655220556429:web:4c253a8dbc201d58d058c4",
+  measurementId: "G-DPCSBY598C",
 };
 
 // Khởi tạo Firebase

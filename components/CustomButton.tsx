@@ -10,7 +10,7 @@ export default function CustomButton({ onPress }: CustomButtonType) {
     <TouchableOpacity
       activeOpacity={0.7}
       style={{ width: "90%", marginVertical: 10 }}
-      onPress={onPress}
+      onPress={() => onPress()}
     >
       <LinearGradient
         colors={["#007537", "#4CAF50"]}

@@ -34,10 +34,8 @@ const CartScreen = ({ navigation }: any) => {
 
     setTotalPrice(total || 0); // Cập nhật totalPrice
   }, [chooseCart, firstCart?.cart]);
-  console.log("cart1", firstCart.cart);
-  firstCart.cart.map((item, index) => {
-    console.log("item", item.product.name);
-  });
+
+  firstCart.cart.map((item, index) => {});
 
   const removeItem = (id: string) => {
     //setCart(cart.filter((item) => item.id !== id));

@@ -12,8 +12,9 @@ import ItemInputPayment from "@/components/ItemInputPayMent";
 import ShippingOption from "@/components/ShippingOption";
 import PaymentOption from "@/components/PaymentOption";
 import ItemProductPayment from "@/components/ItemProductPayment";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { updateUser } from "@/store/useSlice";
 
 const shippingMethods = [
   { id: 1, name: "Giao hàng Nhanh", price: 15000, estimatedTime: "5-7/9" },
@@ -26,12 +27,14 @@ const paymentMethods = [
 
 export default function PayMentScreen({ navigation }: any) {
   const product = useSelector((state: RootState) => state.payment.products);
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch<AppDispatch>();
   const [selectedId, setSelectedId] = useState<number>(1);
   const [selectedIdPayment, setSelectedIdPayment] = useState<number>(1);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [diaChi, setDiaChi] = useState("");
-  const [sdt, setSDT] = useState("");
+  const [name, setName] = useState<string>(user.name || "");
+  const [email, setEmail] = useState<string>(user.email || "");
+  const [diaChi, setDiaChi] = useState<string>(user.diaChi || "");
+  const [sdt, setSDT] = useState<string>(user.soDienThoai || "");
   const [errorName, setErrorName] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [errorDiaChi, setErrorDiaChi] = useState("");
@@ -81,15 +84,24 @@ export default function PayMentScreen({ navigation }: any) {
     setErrorSDT("");
     return true;
   };
-  const handleGoBack = () => {
-    navigation.goBack();
+  const handleGoBack = () => {};
+  const handleTiepTuc = () => {
+    const id = user.id;
+    const newUser = {
+      id: id,
+      uid: user.uid,
+      name: name,
+      diaChi: diaChi,
+      soDienThoai: sdt,
+      email: email,
+    };
+    dispatch(updateUser(newUser));
+    navigation.navigate("PaymentMethodScreen");
   };
   const subtotal = 500000;
   const shippingFee = 15000;
   const total = subtotal + shippingFee;
 
-  console.log(email);
-  console.log(name + "nam");
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <UIHeader title="Thanh toán" onPressLeft={handleGoBack} />
@@ -189,7 +201,7 @@ export default function PayMentScreen({ navigation }: any) {
           <Text style={styles.priceBold}>{total.toLocaleString("vi-VN")}đ</Text>
         </View>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleTiepTuc}>
           <Text style={styles.buttonText}>TIẾP TỤC</Text>
         </TouchableOpacity>
       </View>

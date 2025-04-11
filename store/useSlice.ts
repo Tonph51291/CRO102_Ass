@@ -3,12 +3,10 @@ import { BASE_URL } from "@/repository/baseURL";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Tạo một async thunk để gọi API đăng ký người dùng
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (userData: any) => {
     try {
-      // Gọi API để đăng ký người dùng
       const response = await axios.post(`${BASE_URL}/users`, userData);
       return response.data;
     } catch (error: any) {
@@ -27,9 +25,26 @@ export const getUser = async (uid: string) => {
     throw new Error("Get user failed");
   }
 };
+export const updateUser = createAsyncThunk(
+  "user/updateUser",
+  async (userData: UserState) => {
+    console.log(userData.id);
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/users/${userData.id}`,
+        userData
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Update user failed", error);
+      throw error;
+    }
+  }
+);
 
 // Cập nhật kiểu dữ liệu ban đầu của state
 interface UserState {
+  id: string;
   uid: string;
   name: string;
   email: string;
@@ -39,6 +54,7 @@ interface UserState {
 
 // Cập nhật với giá trị mặc định là đối tượng rỗng
 const initialState: UserState = {
+  id: "",
   uid: "",
   name: "",
   email: "",
@@ -65,6 +81,13 @@ const userSlice = createSlice({
           // Cập nhật state khi API trả về thành công
           console.log("Đăng ký thành công", action.payload);
           // Lưu thông tin người dùng vào state
+          return action.payload;
+        }
+      )
+      .addCase(
+        updateUser.fulfilled,
+        (state, action: PayloadAction<UserState>) => {
+          console.log("Cập nhật người dùng thành công", action.payload);
           return action.payload;
         }
       );

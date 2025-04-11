@@ -8,12 +8,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UIHeader from "@/components/UIHeader";
 import ItemInputPayMent from "@/components/ItemInputPayMent";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { createBankCard, fetchCardBankByUserId } from "@/store/cardBank";
 
 export default function PaymentMethodScreen({ navigation }: any) {
+  const dispatch = useDispatch<AppDispatch>();
+  const userId = useSelector((state: RootState) => state.user.id);
+  const cardBank = useSelector((state: RootState) => state.cardBank.cards);
+  console.log("cardBank", JSON.stringify(cardBank));
   const [isModalVisible, setModalVisible] = useState(false);
   const [cardNumber, setCardNumber] = useState("");
   const [cardHolder, setCardHolder] = useState("");
@@ -22,6 +29,12 @@ export default function PaymentMethodScreen({ navigation }: any) {
   const [cardNumberError, setCardNumberError] = useState("");
   const [cardHolderError, setCardHolderError] = useState("");
   const [expiryDateError, setExpiryDateError] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchCardBankByUserId(userId));
+  }, []);
+
+  const handleSubmit = () => {};
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -57,6 +70,13 @@ export default function PaymentMethodScreen({ navigation }: any) {
 
   const handleDongY = () => {
     setModalVisible(false);
+    const newCardBank = {
+      idUser: userId,
+      cardNumber: cardNumber,
+      cardHolder: cardHolder,
+      expiryDate: expiryDate,
+    };
+    dispatch(createBankCard(newCardBank));
   };
   const handleHuyBo = () => {
     setModalVisible(false);
