@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { fetchProducts } from "@/store/productReduces";
 import { getCartById } from "@/store/cartSlice";
+import { fetchCardBankByUserId } from "@/store/cardBank";
 
 const { width, height } = Dimensions.get("window");
 
@@ -30,6 +31,7 @@ const handleHangMoi = () => {
 export default function HomeScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const uid = useSelector((state: RootState) => state.user.uid);
+  const userId = useSelector((state: RootState) => state.user.id);
   const { products } = useSelector((state: RootState) => state.products);
   useEffect(() => {
     dispatch(fetchProducts());
@@ -37,6 +39,10 @@ export default function HomeScreen({ navigation }: any) {
   useEffect(() => {
     dispatch(getCartById(uid));
   }, [uid]);
+  useEffect(() => {
+    dispatch(fetchCardBankByUserId(userId));
+  }, []);
+
   const handleCart = () => {
     navigation.navigate("CartScreen");
   };

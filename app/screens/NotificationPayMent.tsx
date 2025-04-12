@@ -8,26 +8,15 @@ import {
 import React, { useState } from "react";
 import UIHeader from "@/components/UIHeader";
 import ItemProductPayment from "@/components/ItemProductPayment";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
-export default function NotificationPayMent() {
-  const [item, setCart] = useState([
-    {
-      id: 1,
-      name: "Spider Plant",
-      category: "Ưa bóng",
-      price: 250000,
-      quantity: 2,
-      image: require("../../assets/images/image5.png"),
-    },
-    {
-      id: 2,
-      name: "Spider Plant",
-      category: "Ưa bóng",
-      price: 250000,
-      quantity: 2,
-      image: require("../../assets/images/image5.png"),
-    },
-  ]);
+export default function NotificationPayMent({ navigation }: any) {
+  const product = useSelector((state: RootState) => state.payment.products);
+  const user = useSelector((state: RootState) => state.user);
+  const totalPrice = useSelector(
+    (state: RootState) => state.payment.totalPrice
+  );
   return (
     <View style={styles.container}>
       <UIHeader title={"Thông báo"} />
@@ -38,10 +27,11 @@ export default function NotificationPayMent() {
         <View style={styles.containerThongTin}>
           <Text style={styles.textThongTin}>Thông tin khách hàng</Text>
         </View>
-        <Text style={styles.text}>Bùi Duy Tôn</Text>
-        <Text style={styles.text}>tonbdph51291@gmail.com</Text>
-        <Text style={styles.text}>Tân Xã , Thạch Thất</Text>
-        <Text style={styles.text}>000000000000000</Text>
+        <Text style={styles.text}>{user.name}</Text>
+        <Text style={styles.text}>{user.email}</Text>
+        <Text style={styles.text}>{user.diaChi}</Text>
+        <Text style={styles.text}>{user.soDienThoai}</Text>
+
         <View style={styles.containerThongTin}>
           <Text style={styles.textThongTin}>Phương thức vận chuyển</Text>
         </View>
@@ -52,22 +42,32 @@ export default function NotificationPayMent() {
         </View>
         <Text style={styles.text}>Thẻ VISA/MASTERCARD</Text>
         <View style={styles.containerThongTin}>
-          <Text style={styles.textThongTin}>Hình thức thanh toán</Text>
+          <Text style={styles.textThongTin}>Đơn hàng đã chọn</Text>
         </View>
-        {/* <ItemProductPayment item={item[0]} />
-        <ItemProductPayment item={item[0]} /> */}
+        {product.map((item, index) => {
+          return (
+            <ItemProductPayment
+              key={index}
+              product={item.product}
+              quantity={item.quantity}
+            />
+          );
+        })}
       </ScrollView>
 
       <View style={styles.footerContainer}>
         <View style={styles.dialogContainer}>
           <View style={styles.paymentInfo}>
             <Text style={styles.title}>Đã thanh toán</Text>
-            <Text style={styles.subtitle}>500000</Text>
+            <Text style={styles.subtitle}>{totalPrice}</Text>
           </View>
           <TouchableOpacity style={styles.confirmButton}>
             <Text style={styles.buttonText}>Xem Cẩm nang trồng cây</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => navigation.navigate("UITab")}
+          >
             <Text style={styles.cancelText}>Quay về trang chủ</Text>
           </TouchableOpacity>
         </View>

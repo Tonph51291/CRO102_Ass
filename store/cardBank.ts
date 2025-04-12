@@ -9,19 +9,19 @@ export type CardBank = {
   expiryDate: string;
 };
 interface BankCardState {
-  cards: CardBank[];
+  cards: CardBank | null;
   loading: boolean;
 }
 
 const initialState: BankCardState = {
-  cards: [],
+  cards: null,
   loading: false,
 };
 
 export const fetchCardBankByUserId = createAsyncThunk(
   "bankCard/fetchByUserId",
   async (id: string) => {
-    const response = await axios.get(`${BASE_URL}/cardBank?id=${id}`);
+    const response = await axios.get(`${BASE_URL}/cardBank?idUser=${id}`);
     return response.data[0];
   }
 );
@@ -43,10 +43,10 @@ const bankCardSlice = createSlice({
       })
       .addCase(fetchCardBankByUserId.fulfilled, (state, action) => {
         state.loading = false;
-        state.cards = action.payload;
+        state.cards = action.payload; // chỉ 1 thẻ
       })
       .addCase(createBankCard.fulfilled, (state, action) => {
-        state.cards.push(action.payload);
+        state.cards = action.payload; // thay vì push
       });
   },
 });

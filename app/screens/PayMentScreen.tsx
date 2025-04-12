@@ -27,6 +27,9 @@ const paymentMethods = [
 
 export default function PayMentScreen({ navigation }: any) {
   const product = useSelector((state: RootState) => state.payment.products);
+  const totalPrice = useSelector(
+    (state: RootState) => state.payment.totalPrice
+  );
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const [selectedId, setSelectedId] = useState<number>(1);
@@ -39,7 +42,7 @@ export default function PayMentScreen({ navigation }: any) {
   const [errorEmail, setErrorEmail] = useState("");
   const [errorDiaChi, setErrorDiaChi] = useState("");
   const [errorSDT, setErrorSDT] = useState("");
-  console.log("product" + product);
+  console.log("product" + totalPrice);
 
   const validateName = () => {
     if (!name.trim()) {
@@ -186,7 +189,9 @@ export default function PayMentScreen({ navigation }: any) {
       <View style={styles.container}>
         <View style={styles.row}>
           <Text style={styles.text}>Tạm tính</Text>
-          <Text style={styles.price}>{subtotal.toLocaleString("vi-VN")}đ</Text>
+          <Text style={styles.price}>
+            {totalPrice.toLocaleString("vi-VN")}đ
+          </Text>
         </View>
 
         <View style={styles.row}>
@@ -198,7 +203,9 @@ export default function PayMentScreen({ navigation }: any) {
 
         <View style={styles.row}>
           <Text style={styles.textBold}>Tổng cộng</Text>
-          <Text style={styles.priceBold}>{total.toLocaleString("vi-VN")}đ</Text>
+          <Text style={styles.priceBold}>
+            {totalPrice.toLocaleString("vi-VN")}đ
+          </Text>
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleTiepTuc}>

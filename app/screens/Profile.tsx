@@ -4,7 +4,7 @@ import UIHeader from "@/components/UIHeader";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
-export default function Profile() {
+export default function Profile({ navigation }: any) {
   const user = useSelector((state: RootState) => state.user);
   return (
     <View style={{ flex: 1 }}>
@@ -26,7 +26,10 @@ export default function Profile() {
 
         {/* Phần Menu Chính */}
         <Text style={styles.sectionTitle}>Chung</Text>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate("SettingProfile")}
+        >
           <Text style={styles.menuText}>Chỉnh sửa thông tin</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>

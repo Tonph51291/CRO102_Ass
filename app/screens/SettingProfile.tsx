@@ -1,27 +1,41 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import UIHeader from "@/components/UIHeader";
 import ItemInputPayMent from "@/components/ItemInputPayMent";
+import { AppDispatch, RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "@/store/useSlice";
 
 export default function SettingProfile() {
-  const [name, setName] = useState("Bùi Duy Tôn");
-  const [email, setEmail] = useState("tonbdph51291@gmial.com");
-  const [diaChi, setDiaChi] = useState("Tân Xã , Thạch Thất , Hà Nội");
-  const [sdt, setSDT] = useState("0972179185");
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.user);
+  const [name, setName] = useState(user.name || "");
+  const [email, setEmail] = useState(user.email || "");
+  const [diaChi, setDiaChi] = useState(user.diaChi || "");
+  const [sdt, setSDT] = useState(user.soDienThoai);
   const [errorName, setErrorName] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
   const [errorDiaChi, setErrorDiaChi] = useState("");
   const [errorSDT, setErrorSDT] = useState("");
-  const [item, setCart] = useState([
-    {
-      id: 1,
-      name: "Spider Plant",
-      category: "Ưa bóng",
-      price: 250000,
-      quantity: 2,
-      image: require("../../assets/images/image5.png"),
-    },
-  ]);
+  const [isChanged, setIsChanged] = useState(false);
+
+  useEffect(() => {
+    const hasChanged =
+      name !== user.name ||
+      email !== user.email ||
+      diaChi !== user.diaChi ||
+      sdt !== user.soDienThoai;
+
+    setIsChanged(hasChanged);
+  }, [name, email, diaChi, sdt]);
+
   const validateName = () => {
     if (!name.trim()) {
       setErrorName("Tên không được để trống");
@@ -64,6 +78,36 @@ export default function SettingProfile() {
     }
     setErrorSDT("");
     return true;
+  };
+
+  const submitThongTin = async () => {
+    const isNameValid = validateName();
+    const isEmailValid = validateEmail();
+    const isDiaChiValid = validateDiaChi();
+    const isSDTValid = validateSDT();
+
+    if (isNameValid && isEmailValid && isDiaChiValid && isSDTValid) {
+      try {
+        const updatedUser = {
+          ...user,
+          name,
+          email,
+          diaChi,
+          soDienThoai: sdt,
+        };
+
+        const resultAction = await dispatch(updateUser(updatedUser));
+
+        if (updateUser.fulfilled.match(resultAction)) {
+          Alert.alert("Thành công", "Thông tin người dùng đã được cập nhật");
+        } else {
+          Alert.alert("Lỗi", "Cập nhật thông tin thất bại");
+        }
+      } catch (error) {
+        Alert.alert("Lỗi", "Đã xảy ra lỗi khi cập nhật thông tin");
+        console.error("Cập nhật thất bại:", error);
+      }
+    }
   };
   return (
     <View style={{ flex: 1 }}>
@@ -117,7 +161,13 @@ export default function SettingProfile() {
             }}
           />
         </View>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            { backgroundColor: isChanged ? "#007537" : "#ccc" },
+          ]}
+          onPress={submitThongTin}
+        >
           <Text style={styles.buttonText}>Lưu thông tin</Text>
         </TouchableOpacity>
       </View>

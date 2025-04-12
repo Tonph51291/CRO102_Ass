@@ -14,6 +14,10 @@ import { Button } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { addProductToPayment } from "@/store/paymentSlice";
+import {
+  deleteProductToCart,
+  deleteProductToCartByProductId,
+} from "@/store/cartSlice";
 
 const CartScreen = ({ navigation }: any) => {
   const cart = useSelector((state: RootState) => state.cart.carts);
@@ -22,6 +26,7 @@ const CartScreen = ({ navigation }: any) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [totalPrice, setTotalPrice] = useState<number>();
+  const userId = useSelector((state: RootState) => state.user.id);
 
   const firstCart = cart[0];
   useEffect(() => {
@@ -37,8 +42,15 @@ const CartScreen = ({ navigation }: any) => {
 
   firstCart.cart.map((item, index) => {});
 
-  const removeItem = (id: string) => {
-    //setCart(cart.filter((item) => item.id !== id));
+  const removeItems = () => {
+    const selectedItems = firstCart.cart.filter((item) =>
+      chooseCart.includes(item.product.id)
+    );
+    const productsToAdd = selectedItems.map((item) => item);
+    dispatch(deleteProductToCart(productsToAdd));
+  };
+  const removeItem = (productId: string) => {
+    dispatch(deleteProductToCartByProductId({ userId, productId }));
   };
 
   const updateQuantity = (id: string, amount: number) => {};
@@ -71,15 +83,12 @@ const CartScreen = ({ navigation }: any) => {
     navigation.navigate("PayMentScreen");
   };
   const handleHuyBo = () => setModalVisible(!isModalVisible);
-  const handleDeleteAll = useCallback(() => {
-    setModalVisible(!isModalVisible);
-  }, []);
 
   return (
     <View style={styles.container}>
       <UIHeader
         onPressLeft={handleGoBackHome}
-        onPressRight={handleDeleteAll}
+        onPressRight={removeItems}
         title="GIỎ HÀNG"
         nameIconRight={require("../../assets/images/delete.png")}
       />

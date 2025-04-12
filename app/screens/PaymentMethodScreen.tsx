@@ -1,4 +1,5 @@
 import {
+  Alert,
   Modal,
   SafeAreaView,
   ScrollView,
@@ -15,16 +16,24 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { createBankCard, fetchCardBankByUserId } from "@/store/cardBank";
+import { createPayment } from "@/store/paymentSlice";
+import { deleteProductToCart } from "@/store/cartSlice";
 
 export default function PaymentMethodScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.user);
+
   const userId = useSelector((state: RootState) => state.user.id);
   const cardBank = useSelector((state: RootState) => state.cardBank.cards);
+  const product = useSelector((state: RootState) => state.payment.products);
+  const totalPrice = useSelector(
+    (state: RootState) => state.payment.totalPrice
+  );
   console.log("cardBank", JSON.stringify(cardBank));
   const [isModalVisible, setModalVisible] = useState(false);
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardHolder, setCardHolder] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
+  const [cardNumber, setCardNumber] = useState(cardBank?.cardNumber || "");
+  const [cardHolder, setCardHolder] = useState(cardBank?.cardHolder || "");
+  const [expiryDate, setExpiryDate] = useState(cardBank?.expiryDate || "");
 
   const [cardNumberError, setCardNumberError] = useState("");
   const [cardHolderError, setCardHolderError] = useState("");
@@ -68,15 +77,37 @@ export default function PaymentMethodScreen({ navigation }: any) {
     }
   };
 
-  const handleDongY = () => {
+  const handleDongY = async () => {
+    if (!cardNumber || !cardHolder || !expiryDate) {
+      Alert.alert("Thông báo", "Vui lòng nhập đầy đủ thông tin thẻ!");
+      return;
+    }
+
+    if (!cardBank) {
+      const newCardBank = {
+        idUser: userId,
+        cardNumber,
+        cardHolder,
+        expiryDate,
+      };
+
+      try {
+        await dispatch(createBankCard(newCardBank));
+        navigation.navigate("NotificationPayMent");
+      } catch (error) {
+        Alert.alert("Lỗi", "Không thể tạo thẻ. Vui lòng thử lại sau.");
+      }
+    }
     setModalVisible(false);
-    const newCardBank = {
-      idUser: userId,
-      cardNumber: cardNumber,
-      cardHolder: cardHolder,
-      expiryDate: expiryDate,
+    const newPayMent = {
+      uid: userId,
+      totalPrice: totalPrice,
+      createdAt: new Date().toISOString(),
+      products: product,
     };
-    dispatch(createBankCard(newCardBank));
+    dispatch(createPayment(newPayMent));
+    dispatch(deleteProductToCart(product));
+    navigation.navigate("NotificationPayMent");
   };
   const handleHuyBo = () => {
     setModalVisible(false);
@@ -118,10 +149,10 @@ export default function PaymentMethodScreen({ navigation }: any) {
         <View style={styles.containerThongTin}>
           <Text style={styles.textThongTin}>Thông tain khách hàng</Text>
         </View>
-        <Text style={styles.text}>Bùi Duy Tôn</Text>
-        <Text style={styles.text}>tonbdph51291@gmail.com</Text>
-        <Text style={styles.text}>Tân Xã , Thạch Thất</Text>
-        <Text style={styles.text}>000000000000000</Text>
+        <Text style={styles.text}>{user.name}</Text>
+        <Text style={styles.text}>{user.email}</Text>
+        <Text style={styles.text}>{user.diaChi}</Text>
+        <Text style={styles.text}>{user.soDienThoai}</Text>
         <View style={styles.containerThongTin}>
           <Text style={styles.textThongTin}>Phương thức vận chuyển</Text>
         </View>
@@ -141,7 +172,7 @@ export default function PaymentMethodScreen({ navigation }: any) {
 
         <View style={styles.row}>
           <Text style={styles.textBold}>Tổng cộng</Text>
-          <Text style={styles.priceBold}>9000đ</Text>
+          <Text style={styles.priceBold}>{totalPrice}</Text>
         </View>
 
         <TouchableOpacity

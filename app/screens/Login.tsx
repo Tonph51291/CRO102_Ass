@@ -53,8 +53,7 @@ export default function Login({ navigation }: any) {
 
       navigation.navigate("UITab");
     } catch (error: any) {
-      alert("Lỗi đăng nhập: " + error.message);
-      console.log("Đăng nhập lỗi: ", error.code, error.message);
+      console.log("Firebase login error:", error.code, error.message);
     }
   };
 

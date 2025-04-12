@@ -1,7 +1,12 @@
 import { BASE_URL } from "@/repository/baseURL";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { RootState } from "./store";
 
+type DeleteProductParams = {
+  userId: string;
+  productId: string;
+};
 export type Product = {
   id: string;
   name: string;
@@ -51,6 +56,91 @@ export const addToCart = createAsyncThunk(
     return response.data;
   }
 );
+
+export const deleteProductToCartByProductId = createAsyncThunk(
+  "cart/deleteProductToCartByProductId",
+  async ({ userId, productId }: DeleteProductParams, { rejectWithValue }) => {
+    try {
+      // Lấy giỏ hàng hiện tại
+      const res = await axios.get(`${BASE_URL}/cart?userId=${userId}`);
+      const cart = res.data[0]; // giả sử có duy nhất 1 cart
+
+      if (!cart) {
+        return rejectWithValue("Không tìm thấy giỏ hàng.");
+      }
+
+      // Lọc ra các cart item KHÔNG có product.id trùng
+      const updatedItems = cart.cart.filter(
+        (item: CartItem) => item.product.id !== productId
+      );
+
+      // Gửi request PUT để cập nhật lại giỏ hàng
+      const updatedCart = {
+        ...cart,
+        cart: updatedItems,
+      };
+
+      const updateRes = await axios.put(
+        `${BASE_URL}/cart/${cart.id}`,
+        updatedCart
+      );
+
+      return updateRes.data;
+    } catch (error) {
+      return rejectWithValue("Xóa sản phẩm khỏi giỏ hàng thất bại.");
+    }
+  }
+);
+
+export const deleteProductToCart = createAsyncThunk(
+  "cart/deleteProductToCart",
+  async (products: CartItem[], { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const userId = state.user.id;
+
+      // Lấy giỏ hàng hiện tại của user
+      const res = await axios.get(`${BASE_URL}/cart?userId=${userId}`);
+      const cart: Cart = res.data[0]; // giả sử 1 giỏ hàng duy nhất
+
+      if (!cart) {
+        return rejectWithValue("Không tìm thấy giỏ hàng.");
+      }
+
+      // Lọc ra các item KHÔNG nằm trong danh sách thanh toán
+      const remainingCartItems = cart.cart.filter(
+        (item: CartItem) =>
+          !products.some((paidItem) => paidItem.product.id === item.product.id)
+      );
+
+      // Cập nhật lại tổng số lượng
+      const totalQuantity = remainingCartItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+
+      // Tạo cart mới
+      const updatedCart = {
+        ...cart,
+        cart: remainingCartItems,
+        quantity: totalQuantity,
+      };
+
+      // Gửi PUT request để cập nhật giỏ hàng
+      const updateRes = await axios.put(
+        `${BASE_URL}/cart/${cart.id}`,
+        updatedCart
+      );
+
+      return updateRes.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        "Không thể xóa sản phẩm khỏi giỏ hàng sau khi thanh toán"
+      );
+    }
+  }
+);
+
 export const updateCart = createAsyncThunk(
   "cart/updateCart",
   async (
@@ -118,6 +208,36 @@ export const cartSlide = createSlice({
       .addCase(updateCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to update cart";
+      })
+      .addCase(deleteProductToCart.fulfilled, (state, action) => {
+        const updatedCart = action.payload;
+        const index = state.carts.findIndex(
+          (cart) => cart.id === updatedCart.id
+        );
+        if (index !== -1) {
+          state.carts[index] = updatedCart;
+        }
+      })
+      .addCase(deleteProductToCartByProductId.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        deleteProductToCartByProductId.fulfilled,
+        (state, action: PayloadAction<Cart>) => {
+          state.loading = false;
+          const updatedCart = action.payload;
+          const index = state.carts.findIndex(
+            (cart) => cart.id === updatedCart.id
+          );
+          if (index !== -1) {
+            state.carts[index] = updatedCart;
+          }
+        }
+      )
+      .addCase(deleteProductToCartByProductId.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) || "Xóa sản phẩm khỏi giỏ hàng thất bại";
       });
   },
 });
